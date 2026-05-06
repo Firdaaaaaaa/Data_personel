@@ -23,7 +23,7 @@ class ViewPersonnel extends ViewRecord
                     ->label('Foto')
                     ->getStateUsing(fn ($record) => $record->foto
                         ? asset('storage/' . $record->foto)
-                        : asset('images/default-user.png')
+                        : asset('images/default-user.jpg')
                     )
                     ->circular()
                     ->size(120) // 🔥 ganti height → size

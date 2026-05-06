@@ -21,7 +21,8 @@ class PersonnelExport implements FromCollection, WithHeadings, WithEvents, Shoul
         $this->data = $data;
     }
 
-    // ✅ DATA
+    // ✅ DATA 
+    // DATA excel
     public function collection(): Collection
     {
         return $this->data->values()->map(function ($personnel, $index) {

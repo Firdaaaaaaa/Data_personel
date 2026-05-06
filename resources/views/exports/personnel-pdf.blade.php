@@ -45,6 +45,8 @@
 </head>
 <body>
 
+{{-- PDF HTML --}}
+
 <h2>DATA PERSONEL</h2>
 
 @foreach ($personnels->chunk(40) as $chunk)

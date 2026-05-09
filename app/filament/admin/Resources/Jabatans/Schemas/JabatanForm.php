@@ -13,21 +13,24 @@ class JabatanForm
         return $schema
             ->components([
 
-                // ✅ sesuai database
+                // Nama Jabatan
                 TextInput::make('nama')
                     ->label('Nama Jabatan')
                     ->required()
                     ->maxLength(255),
 
+                // Urutan Jabatan
                 TextInput::make('urutan')
                     ->label('Urutan')
                     ->numeric()
                     ->required(),
 
+                // Jabatan Atasan
                 Select::make('parent_id')
                     ->label('Jabatan Atasan')
-                    ->relationship('parent', 'nama')
+                    ->relationship('atasan', 'nama')
                     ->searchable()
+                    ->preload()
                     ->nullable(),
 
             ]);

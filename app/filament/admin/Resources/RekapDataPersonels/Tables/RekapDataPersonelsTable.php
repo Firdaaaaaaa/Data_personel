@@ -6,6 +6,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Personnel;
 use App\Exports\PersonnelExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -15,35 +16,35 @@ class RekapDataPersonelsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query
-                    ->join('polseks', 'personnels.polsek_id', '=', 'polseks.id')
+            ->query(
+                Personnel::query()
+                    ->with('polsek')
+                    ->whereNotNull('polsek_id')
                     ->selectRaw('
-                        MIN(personnels.id) as id,
-                        polseks.nama_polsek,
-                        personnels.polsek_id,
-                        COUNT(*) as jumlah
+                        MIN(id) as id,
+                        polsek_id,
+                        COUNT(id) as jumlah
                     ')
-                    ->groupBy('personnels.polsek_id', 'polseks.nama_polsek')
-                    ->orderBy('polseks.nama_polsek', 'asc');
-            })
+                    ->groupBy('polsek_id')
+            )
 
             ->columns([
-                TextColumn::make('nama_polsek')
+
+                TextColumn::make('polsek.nama_polsek')
                     ->label('Nama Polsek')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('jumlah')
                     ->label('Jumlah Personel')
-                    ->sortable()
                     ->badge()
-                    ->color('success'),
+                    ->color('success')
+                    ->sortable(),
             ])
 
             ->recordActions([
 
-                // ✅ LIHAT → MASUK KE TABLE PERSONEL (FILTER OTOMATIS)
+                // ================= LIHAT =================
                 Action::make('lihat')
                     ->label('Lihat')
                     ->icon('heroicon-o-eye')
@@ -54,41 +55,51 @@ class RekapDataPersonelsTable
                         ]
                     )),
 
-                // ✅ EXPORT EXCEL PER POLSEK
+                // ================= EXPORT EXCEL =================
                 Action::make('export_excel')
                     ->label('Export Excel')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function ($record) {
 
-                        $personnels = \App\Models\Personnel::with([
-                            'pangkat', 'jabatan', 'dikum', 'diktuk', 'dikjur', 'polsek'
+                        $personnels = Personnel::with([
+                            'pangkat',
+                            'jabatan',
+                            'dikum',
+                            'diktuk',
+                            'dikjur',
+                            'polsek',
                         ])
                         ->where('polsek_id', $record->polsek_id)
                         ->get();
 
-                        $namaPolsek = $record->nama_polsek ?? 'polsek';
+                        $namaPolsek = $record->polsek?->nama_polsek ?? 'polsek';
 
                         return Excel::download(
                             new PersonnelExport($personnels),
-                            'personnel_' . str_replace(' ', '_', $namaPolsek) . '_' . date('Y-m-d') . '.xlsx'
+                            'personnel_' . str_replace(' ', '_', $namaPolsek) . '.xlsx'
                         );
                     }),
 
-                // ✅ EXPORT PDF PER POLSEK
+                // ================= EXPORT PDF =================
                 Action::make('export_pdf')
                     ->label('Export PDF')
                     ->icon('heroicon-o-document-text')
                     ->color('danger')
                     ->action(function ($record) {
 
-                        $personnels = \App\Models\Personnel::with([
-                            'pangkat', 'jabatan', 'dikum', 'diktuk', 'dikjur', 'polsek'
+                        $personnels = Personnel::with([
+                            'pangkat',
+                            'jabatan',
+                            'dikum',
+                            'diktuk',
+                            'dikjur',
+                            'polsek',
                         ])
                         ->where('polsek_id', $record->polsek_id)
                         ->get();
 
-                        $namaPolsek = $record->nama_polsek ?? 'Polsek';
+                        $namaPolsek = $record->polsek?->nama_polsek ?? 'Polsek';
 
                         $pdf = Pdf::loadView('exports.personnel-pdf', [
                             'personnels' => $personnels,
@@ -99,7 +110,7 @@ class RekapDataPersonelsTable
 
                         return response()->streamDownload(
                             fn () => print($pdf->output()),
-                            'personnel_' . str_replace(' ', '_', $namaPolsek) . '_' . date('Y-m-d') . '.pdf'
+                            'personnel_' . str_replace(' ', '_', $namaPolsek) . '.pdf'
                         );
                     }),
             ]);

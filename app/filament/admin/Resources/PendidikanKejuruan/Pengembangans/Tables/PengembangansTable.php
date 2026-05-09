@@ -7,6 +7,7 @@ use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 
 class PengembangansTable
 {
@@ -18,7 +19,7 @@ class PengembangansTable
                     ->label('No')
                     ->rowIndex(),
 
-                TextColumn::make('nama_pendidikan')
+                TextColumn::make('nama_pengembangan')
                     ->label('Dikjur / Dikbang')
                     ->searchable(),
 
@@ -30,15 +31,23 @@ class PengembangansTable
                     ->limit(30),
             ])
             ->filters([
-                //
+                SelectFilter::make('keterangan')
+                    ->label('Tahun')
+                    ->options(
+                        \App\Models\PendidikanKejuruan\Pengembangan::query()
+                            ->distinct()
+                            ->orderBy('keterangan')
+                            ->pluck('keterangan', 'keterangan')
+                            ->toArray()
+                    ),
             ])
             ->recordActions([
-                ViewAction::make(),   // 👈 tambah view
+                ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make(), // 👈 tambah delete
+                DeleteAction::make(),
             ])
             ->toolbarActions([
-               
+
             ]);
     }
 }

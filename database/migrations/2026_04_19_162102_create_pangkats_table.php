@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('nama_pangkat');
             $table->string('golongan');
-            $table->integer('urutan_pangkat');
             $table->timestamps();
         });
     }

@@ -12,14 +12,12 @@ class Jabatan extends Model
         'parent_id',
     ];
 
-    // relasi ke atasan
-    public function parent()
+    public function atasan()
     {
         return $this->belongsTo(Jabatan::class, 'parent_id');
     }
 
-    // relasi ke bawahan (opsional tapi bagus)
-    public function children()
+    public function bawahan()
     {
         return $this->hasMany(Jabatan::class, 'parent_id');
     }

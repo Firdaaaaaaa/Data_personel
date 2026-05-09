@@ -8,6 +8,7 @@ class PendidikanUmum extends Model
 {
     protected $fillable = [
         'jenjang_pendidikan',
-        'jurusan', // ✅ TAMBAHKAN INI
+        'jurusan',
+        'keterangan',
     ];
 }

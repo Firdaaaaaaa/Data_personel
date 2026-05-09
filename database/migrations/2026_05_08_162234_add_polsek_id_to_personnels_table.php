@@ -9,14 +9,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('personnels', function (Blueprint $table) {
-            $table->string('foto')->nullable(); // ✅ HAPUS after()
+
+            $table->foreignId('polsek_id')
+                ->nullable()
+                ->constrained('polseks')
+                ->cascadeOnDelete();
+
         });
     }
 
     public function down(): void
     {
         Schema::table('personnels', function (Blueprint $table) {
-            $table->dropColumn('foto');
+
+            $table->dropForeign(['polsek_id']);
+            $table->dropColumn('polsek_id');
+
         });
     }
 };

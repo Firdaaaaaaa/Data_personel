@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources\PendidikanUmums\Schemas;
 
-use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
 
 class PendidikanUmumForm
 {
@@ -11,6 +11,7 @@ class PendidikanUmumForm
     {
         return $schema
             ->components([
+
                 TextInput::make('jenjang_pendidikan')
                     ->label('Jenjang Pendidikan')
                     ->required(),
@@ -18,6 +19,12 @@ class PendidikanUmumForm
                 TextInput::make('jurusan')
                     ->label('Nama Pendidikan')
                     ->required(),
+
+                TextInput::make('keterangan')
+                    ->label('Keterangan')
+                    ->placeholder('Contoh: Tahun 2020')
+                    ->required(),
+
             ]);
     }
 }

@@ -16,21 +16,27 @@ class ViewPersonnel extends ViewRecord
     public function infolist(Schema $schema): Schema
     {
         return $schema
+            ->columns(2)
+
             ->components([
 
-                // ✅ FOTO FIX (AMAN & MODERN)
+                // ✅ FOTO FIX
                 ImageEntry::make('foto')
                     ->label('Foto')
-                    ->getStateUsing(fn ($record) => $record->foto
-                        ? asset('storage/' . $record->foto)
-                        : asset('images/default-user.jpg')
+                    ->getStateUsing(fn ($record) =>
+                        $record->foto
+                            ? asset('storage/' . $record->foto)
+                            : asset('images/default-user.png')
                     )
                     ->circular()
-                    ->size(120) // 🔥 ganti height → size
+                    ->size(150)
                     ->columnSpanFull(),
 
-                TextEntry::make('nama')->label('Nama'),
-                TextEntry::make('nrp')->label('NRP'),
+                TextEntry::make('nama')
+                    ->label('Nama'),
+
+                TextEntry::make('nrp')
+                    ->label('NRP'),
 
                 TextEntry::make('pangkat.nama_pangkat')
                     ->label('Pangkat'),
@@ -44,14 +50,15 @@ class ViewPersonnel extends ViewRecord
                 TextEntry::make('diktuk.nama_pendidikan')
                     ->label('Diktuk'),
 
-                TextEntry::make('dikjur.nama_pendidikan')
-                    ->label('Dikjur/Dikbang'),
+                // ✅ FIX DIKJUR
+                TextEntry::make('dikjur.nama_pengembangan')
+                    ->label('Dikjur/Dikbang')
+                    ->default('-'),
 
                 TextEntry::make('polsek.nama_polsek')
                     ->label('Polsek')
                     ->default('-'),
-            ])
-            ->columns(2);
+            ]);
     }
 
     protected function getHeaderActions(): array

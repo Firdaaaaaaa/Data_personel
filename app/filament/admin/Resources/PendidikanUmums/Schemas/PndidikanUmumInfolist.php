@@ -25,12 +25,12 @@ class PendidikanUmumInfolist
                         'class' => 'border-b pb-2'
                     ]),
 
-                TextEntry::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime()
+                TextEntry::make('keterangan')
+                    ->label('Keterangan')
                     ->extraAttributes([
                         'class' => 'border-b pb-2'
                     ]),
+
             ]);
     }
 }

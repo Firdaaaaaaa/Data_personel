@@ -26,7 +26,7 @@ class JabatansTable
                     ->label('Urutan')
                     ->sortable(),
 
-                TextColumn::make('parent.nama')
+                TextColumn::make('atasan.nama')
                     ->label('Jabatan Atasan')
                     ->default('-'),
             ])
@@ -36,7 +36,7 @@ class JabatansTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make(), 
+                DeleteAction::make(),
             ])
             ->defaultSort('urutan');
     }

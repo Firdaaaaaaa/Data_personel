@@ -50,11 +50,14 @@ class PersonnelResource extends Resource
                 ->required(),
 
             Select::make('pangkat_id')
-                ->label('Pangkat')
-                ->relationship('pangkat', 'nama_pangkat')
-                ->searchable()
-                ->preload()
-                ->required(),
+            ->label('Pangkat')
+            ->relationship('pangkat', 'nama_pangkat')
+            ->getOptionLabelFromRecordUsing(
+                fn ($record) => $record->nama_pangkat . ' - ' . $record->golongan
+            )
+            ->searchable()
+            ->preload()
+            ->required(),
 
             Select::make('jabatan_id')
                 ->label('Jabatan')
@@ -64,23 +67,44 @@ class PersonnelResource extends Resource
                 ->required(),
 
             Select::make('dikum_id')
-                ->label('Pendidikan Umum')
-                ->relationship('dikum', 'jenjang_pendidikan')
-                ->searchable()
-                ->preload(),
+            ->label('Pendidikan Umum')
+            ->relationship('dikum', 'jenjang_pendidikan')
+            ->getOptionLabelFromRecordUsing(
+                fn ($record) =>
+                    $record->jenjang_pendidikan .
+                    ' - ' .
+                    $record->keterangan
+            )
+            ->searchable()
+            ->preload(),
 
             Select::make('diktuk_id')
-                ->label('Pendidikan Pembentukan')
-                ->relationship('diktuk', 'nama_pendidikan')
-                ->searchable()
-                ->preload(),
+            ->label('Pendidikan Pembentukan')
+            ->relationship('diktuk', 'nama_pendidikan')
+            ->getOptionLabelFromRecordUsing(
+                fn ($record) =>
+                    $record->nama_pendidikan .
+                    ' - ' .
+                    $record->jenis_diktuk .
+                    ' - ' .
+                    $record->keterangan
+            )
+            ->searchable()
+            ->preload(),
 
             Select::make('dikjur_id')
-                ->label('Pengembangan')
-                ->relationship('dikjur', 'nama_pengembangan')
-                ->searchable()
-                ->preload(),
-
+            ->label('Pendidikan Kejuruan/Pengembangan')
+            ->relationship('dikjur', 'nama_pengembangan')
+            ->getOptionLabelFromRecordUsing(
+                fn ($record) =>
+                    $record->nama_pengembangan .
+                    ' - ' .
+                    $record->kategori .
+                    ' - ' .
+                    $record->keterangan
+            )
+            ->searchable()
+            ->preload(),
             Select::make('polsek_id')
                 ->label('Polsek')
                 ->relationship('polsek', 'nama_polsek')
@@ -88,7 +112,6 @@ class PersonnelResource extends Resource
                 ->preload()
                 ->required(),
 
-            // ================= FOTO =================
             FileUpload::make('foto')
                 ->label('Foto')
                 ->image()
@@ -105,33 +128,21 @@ class PersonnelResource extends Resource
     {
         return $table
 
-            // ================= QUERY =================
             ->modifyQueryUsing(function (Builder $query) {
 
                 $query->join('jabatans', 'personnels.jabatan_id', '=', 'jabatans.id')
                     ->select('personnels.*', 'jabatans.urutan');
-
-                // ✅ FILTER DARI REKAP POLSEK
-                $polsekId = data_get(
-                    request()->input('tableFilters'),
-                    'polsek_id.value'
-                );
-
-                if ($polsekId) {
-                    $query->where('personnels.polsek_id', $polsekId);
-                }
 
                 return $query->orderBy('jabatans.urutan', 'asc');
             })
 
             ->columns([
 
-                // ================= FOTO =================
                 ImageColumn::make('foto')
                     ->label('Foto')
                     ->getStateUsing(fn ($record) => asset('storage/' . $record->foto))
                     ->circular()
-                    ->size(50),
+                    ->imageSize(50),  // ✅ SUDAH DIPERBAIKI
 
                 TextColumn::make('id')
                     ->label('No')
@@ -166,10 +177,70 @@ class PersonnelResource extends Resource
             ])
 
             ->filters([
+
                 SelectFilter::make('polsek_id')
                     ->label('Polsek')
                     ->relationship('polsek', 'nama_polsek')
                     ->searchable(),
+
+                SelectFilter::make('diktuk')
+                    ->label('Status DIKTUK')
+                    ->options([
+                        'sudah' => 'Sudah',
+                        'belum' => 'Belum',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+
+                        if (($data['value'] ?? null) === 'sudah') {
+                            return $query->whereNotNull('personnels.diktuk_id');
+                        }
+
+                        if (($data['value'] ?? null) === 'belum') {
+                            return $query->whereNull('personnels.diktuk_id');
+                        }
+
+                        return $query;
+                    }),
+
+                SelectFilter::make('dikbang')
+                    ->label('Status DIKBANG/DIKJUR')
+                    ->options([
+                        'sudah' => 'Sudah',
+                        'belum' => 'Belum',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+
+                        if (($data['value'] ?? null) === 'sudah') {
+                            return $query->whereNotNull('personnels.dikjur_id');
+                        }
+
+                        if (($data['value'] ?? null) === 'belum') {
+                            return $query->whereNull('personnels.dikjur_id');
+                        }
+
+                        return $query;
+                    }),
+
+                SelectFilter::make('pendidikan')
+                    ->label('Pendidikan Terakhir')
+                    ->options([
+                        'SMA/SMK' => 'SMA/SMK',
+                        'D3' => 'D3',
+                        'S1' => 'S1',
+                        'S2' => 'S2',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+
+                        $value = $data['value'] ?? null;
+
+                        if (!empty($value)) {
+                            return $query->whereHas('dikum', function ($q) use ($value) {
+                                $q->where('jenjang_pendidikan', 'LIKE', "%{$value}%");
+                            });
+                        }
+
+                        return $query;
+                    }),
             ])
 
             ->recordActions([
@@ -195,4 +266,4 @@ class PersonnelResource extends Resource
             'edit' => EditPersonnel::route('/{record}/edit'),
         ];
     }
-}
+} 

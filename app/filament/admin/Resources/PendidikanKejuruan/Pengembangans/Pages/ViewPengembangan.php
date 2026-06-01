@@ -15,11 +15,11 @@ class ViewPengembangan extends ViewRecord
     {
         return $schema
             ->components([
-                TextEntry::make('nama_pendidikan')
+                TextEntry::make('nama_pengembangan')
                     ->label('Nama Pendidikan')
                     ->columnSpanFull(),
 
-                TextEntry::make('kategori') // ✅ FIX DI SINI
+                TextEntry::make('kategori')
                     ->label('Kategori')
                     ->columnSpanFull(),
 

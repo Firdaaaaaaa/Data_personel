@@ -5,11 +5,11 @@ namespace App\Filament\Admin\Resources\RekapDataPersonels\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\Action;
-use Illuminate\Database\Eloquent\Builder;
 use App\Models\Personnel;
 use App\Exports\PersonnelExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Filament\Admin\Pages\DetailRekapPolsek;
 
 class RekapDataPersonelsTable
 {
@@ -20,11 +20,7 @@ class RekapDataPersonelsTable
                 Personnel::query()
                     ->with('polsek')
                     ->whereNotNull('polsek_id')
-                    ->selectRaw('
-                        MIN(id) as id,
-                        polsek_id,
-                        COUNT(id) as jumlah
-                    ')
+                    ->selectRaw('MIN(id) as id, polsek_id')
                     ->groupBy('polsek_id')
             )
 
@@ -35,25 +31,17 @@ class RekapDataPersonelsTable
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('jumlah')
-                    ->label('Jumlah Personel')
-                    ->badge()
-                    ->color('success')
-                    ->sortable(),
             ])
 
             ->recordActions([
 
-                // ================= LIHAT =================
+                // ================= LIHAT DETAIL REKAP =================
                 Action::make('lihat')
                     ->label('Lihat')
                     ->icon('heroicon-o-eye')
-                    ->url(fn ($record) => route(
-                        'filament.admin.resources.personnels.index',
-                        [
-                            'tableFilters[polsek_id][value]' => $record->polsek_id,
-                        ]
-                    )),
+                    ->url(fn ($record) => DetailRekapPolsek::getUrl([
+                        'id' => $record->polsek_id,
+                    ])),
 
                 // ================= EXPORT EXCEL =================
                 Action::make('export_excel')

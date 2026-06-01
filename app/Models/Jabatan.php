@@ -21,4 +21,9 @@ class Jabatan extends Model
     {
         return $this->hasMany(Jabatan::class, 'parent_id');
     }
+
+    public function personnels()
+    {
+        return $this->hasMany(Personnel::class);
+    }
 }

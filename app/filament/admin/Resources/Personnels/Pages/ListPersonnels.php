@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ListPersonnels extends ListRecords
@@ -16,19 +17,16 @@ class ListPersonnels extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        // 🔥 DETEKSI: kalau dari Rekap (ada filter polsek)
+        // 🔥 DETEKSI: kalau dari Rekap
         $isFromRekap = request()->has('tableFilters');
 
-        // ❌ kalau dari Rekap → sembunyikan semua tombol
         if ($isFromRekap) {
             return [];
         }
 
-        // ✅ kalau buka menu Personel biasa → tampilkan semua
         return [
             CreateAction::make(),
 
-            // ✅ EXPORT EXCEL (ikut filter table)
             Action::make('export_excel')
                 ->label('Export Excel')
                 ->icon('heroicon-o-arrow-down-tray')
@@ -51,7 +49,6 @@ class ListPersonnels extends ListRecords
                     );
                 }),
 
-            // ✅ EXPORT PDF (ikut filter table)
             Action::make('export_pdf')
                 ->label('Export PDF')
                 ->icon('heroicon-o-document')
@@ -67,7 +64,7 @@ class ListPersonnels extends ListRecords
                         'dikjur',
                         'polsek'
                     ])
-                    ->limit(100) // biar aman PDF
+                    ->limit(100)
                     ->get();
 
                     $pdf = Pdf::loadView('exports.personnel-pdf', [
@@ -80,5 +77,55 @@ class ListPersonnels extends ListRecords
                     );
                 }),
         ];
+    }
+
+    // 🔥 FIX FILTER DARI REKAP
+    protected function getTableQuery(): Builder
+    {
+        $query = parent::getTableQuery();
+
+        // ================= POLSEK =================
+        if ($polsek = request('tableFilters.polsek_id.value')) {
+            $query->where('polsek_id', $polsek);
+        }
+
+        // ================= DIKTUK =================
+        if (request('tableFilters.diktuk.value') === 'sudah') {
+            $query->whereNotNull('diktuk_id');
+        }
+
+        if (request('tableFilters.diktuk.value') === 'belum') {
+            $query->whereNull('diktuk_id');
+        }
+
+        // ================= DIKBANG =================
+        if (request('tableFilters.dikbang.value') === 'sudah') {
+            $query->whereNotNull('dikjur_id');
+        }
+
+        if (request('tableFilters.dikbang.value') === 'belum') {
+            $query->whereNull('dikjur_id');
+        }
+
+        // ================= PENDIDIKAN =================
+        if ($pendidikan = request('tableFilters.pendidikan.value')) {
+
+            $query->whereHas('dikum', function ($q) use ($pendidikan) {
+
+                if ($pendidikan === 'SMA/SMK') {
+                    $q->whereIn('jenjang_pendidikan', [
+                        'SMA',
+                        'SMK',
+                        'SMA/SMK',
+                        'SMA/Sederajat'
+                    ]);
+                } else {
+                    $q->where('jenjang_pendidikan', $pendidikan);
+                }
+
+            });
+        }
+
+        return $query;
     }
 }

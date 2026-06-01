@@ -19,12 +19,6 @@ class PendidikanUmumInfolist
                         'class' => 'border-b pb-3 text-lg font-bold'
                     ]),
 
-                TextEntry::make('jurusan')
-                    ->label('Nama Pendidikan')
-                    ->extraAttributes([
-                        'class' => 'border-b pb-2'
-                    ]),
-
                 TextEntry::make('keterangan')
                     ->label('Keterangan')
                     ->extraAttributes([

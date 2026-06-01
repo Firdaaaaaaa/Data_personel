@@ -14,6 +14,7 @@ class JabatansTable
     {
         return $table
             ->columns([
+
                 TextColumn::make('no')
                     ->label('No')
                     ->rowIndex(),
@@ -26,9 +27,11 @@ class JabatansTable
                     ->label('Urutan')
                     ->sortable(),
 
+                // FIX JABATAN ATASAN
                 TextColumn::make('atasan.nama')
                     ->label('Jabatan Atasan')
                     ->default('-'),
+
             ])
             ->filters([
                 //

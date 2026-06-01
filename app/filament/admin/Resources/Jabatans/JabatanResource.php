@@ -7,7 +7,7 @@ use App\Filament\Admin\Resources\Jabatans\Pages\EditJabatan;
 use App\Filament\Admin\Resources\Jabatans\Pages\ListJabatans;
 use App\Filament\Admin\Resources\Jabatans\Pages\ViewJabatan;
 use App\Filament\Admin\Resources\Jabatans\Schemas\JabatanForm;
-use App\Filament\Admin\Resources\Jabatans\Schemas\JabatanInfolist; // ✅ TAMBAH
+use App\Filament\Admin\Resources\Jabatans\Schemas\JabatanInfolist;
 use App\Filament\Admin\Resources\Jabatans\Tables\JabatansTable;
 use App\Models\Jabatan;
 use BackedEnum;
@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class JabatanResource extends Resource
 {
@@ -32,7 +33,6 @@ class JabatanResource extends Resource
         return JabatanForm::configure($schema);
     }
 
-    // 🔥 INI YANG BIKIN VIEW BERUBAH
     public static function infolist(Schema $schema): Schema
     {
         return JabatanInfolist::configure($schema);
@@ -41,6 +41,13 @@ class JabatanResource extends Resource
     public static function table(Table $table): Table
     {
         return JabatansTable::configure($table);
+    }
+
+    // TAMBAHAN AGAR URUT SESUAI URUTAN JABATAN
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderBy('urutan', 'asc');
     }
 
     public static function getRelations(): array

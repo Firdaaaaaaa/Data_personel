@@ -20,7 +20,7 @@ class PengembangansTable
                     ->rowIndex(),
 
                 TextColumn::make('nama_pengembangan')
-                    ->label('Dikjur / Dikbang')
+                    ->label('Nama Pendidikan')
                     ->searchable(),
 
                 TextColumn::make('kategori')

@@ -5,23 +5,36 @@ namespace App\Filament\Admin\Resources\Polseks;
 use App\Filament\Admin\Resources\Polseks\Pages\CreatePolsek;
 use App\Filament\Admin\Resources\Polseks\Pages\EditPolsek;
 use App\Filament\Admin\Resources\Polseks\Pages\ListPolseks;
-use App\Filament\Admin\Resources\Polseks\Pages\ViewPolsek; // ✅ AKTIF
+use App\Filament\Admin\Resources\Polseks\Pages\ViewPolsek;
 use App\Filament\Admin\Resources\Polseks\Schemas\PolsekForm;
 use App\Filament\Admin\Resources\Polseks\Tables\PolseksTable;
 use App\Models\Polsek;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class PolsekResource extends Resource
 {
     protected static ?string $model = Polsek::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Ikon
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
+    // Label menu
+    protected static ?string $navigationLabel = 'Daftar Polsek';
+
+    // Label plural
+    protected static ?string $pluralLabel = 'Daftar Polsek';
+
+    // Label singular
+    protected static ?string $modelLabel = 'Polsek';
+
+    // Urutan menu
     protected static ?int $navigationSort = 7;
+
+    // HAPUS ATAU COMMENT BARIS INI DULU
+    // protected static ?string $navigationGroup = 'Master Data';
 
     public static function form(Schema $schema): Schema
     {
@@ -43,7 +56,7 @@ class PolsekResource extends Resource
         return [
             'index' => ListPolseks::route('/'),
             'create' => CreatePolsek::route('/create'),
-            'view' => ViewPolsek::route('/{record}'), // ✅ WAJIB
+            'view' => ViewPolsek::route('/{record}'),
             'edit' => EditPolsek::route('/{record}/edit'),
         ];
     }

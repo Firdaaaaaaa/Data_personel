@@ -8,4 +8,8 @@ use Filament\Resources\Pages\EditRecord;
 class EditPolsek extends EditRecord
 {
     protected static string $resource = PolsekResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -15,11 +15,7 @@ class PendidikanUmumForm
                 TextInput::make('jenjang_pendidikan')
                     ->label('Jenjang Pendidikan')
                     ->required(),
-
-                TextInput::make('jurusan')
-                    ->label('Nama Pendidikan')
-                    ->required(),
-
+                    
                 TextInput::make('keterangan')
                     ->label('Keterangan')
                     ->placeholder('Contoh: Tahun 2020')

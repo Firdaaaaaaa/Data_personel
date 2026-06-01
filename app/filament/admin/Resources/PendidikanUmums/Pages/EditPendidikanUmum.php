@@ -9,5 +9,8 @@ class EditPendidikanUmum extends EditRecord
 {
     protected static string $resource = PendidikanUmumResource::class;
 
-   
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

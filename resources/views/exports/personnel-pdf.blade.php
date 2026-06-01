@@ -45,8 +45,6 @@
 </head>
 <body>
 
-{{-- PDF HTML --}}
-
 <h2>DATA PERSONEL</h2>
 
 @foreach ($personnels->chunk(40) as $chunk)
@@ -54,7 +52,7 @@
         <thead>
             <tr>
                 <th width="5%">No</th>
-                <th width="10%">Foto</th> <!-- ✅ tambah -->
+                <th width="10%">Foto</th>
                 <th width="15%">Nama</th>
                 <th width="10%">NRP</th>
                 <th width="12%">Pangkat</th>
@@ -71,7 +69,6 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
 
-                <!-- ✅ FOTO -->
                 <td>
                     @if ($personnel->foto)
                         <img src="{{ public_path('storage/' . $personnel->foto) }}">
@@ -86,7 +83,10 @@
                 <td>{{ $personnel->jabatan?->nama }}</td>
                 <td>{{ $personnel->dikum?->jenjang_pendidikan }}</td>
                 <td>{{ $personnel->diktuk?->nama_pendidikan }}</td>
-                <td>{{ $personnel->dikjur?->nama_pendidikan }}</td>
+
+                <!-- 🔥 FIX DI SINI -->
+                <td>{{ $personnel->dikjur?->nama_pengembangan }}</td>
+
                 <td>{{ $personnel->polsek?->nama_polsek }}</td>
             </tr>
         @endforeach

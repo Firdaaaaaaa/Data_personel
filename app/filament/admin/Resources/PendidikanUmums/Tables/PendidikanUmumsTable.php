@@ -26,11 +26,6 @@ class PendidikanUmumsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('jurusan')
-                    ->label('Jurusan')
-                    ->searchable()
-                    ->placeholder('-')
-                    ->wrap(),
 
                 TextColumn::make('keterangan')
                     ->label('Keterangan')

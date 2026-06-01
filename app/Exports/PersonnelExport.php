@@ -21,8 +21,7 @@ class PersonnelExport implements FromCollection, WithHeadings, WithEvents, Shoul
         $this->data = $data;
     }
 
-    // ✅ DATA 
-    // DATA excel
+    // ✅ DATA
     public function collection(): Collection
     {
         return $this->data->values()->map(function ($personnel, $index) {
@@ -34,7 +33,10 @@ class PersonnelExport implements FromCollection, WithHeadings, WithEvents, Shoul
                 $personnel->jabatan?->nama,
                 $personnel->dikum?->jenjang_pendidikan,
                 $personnel->diktuk?->nama_pendidikan,
-                $personnel->dikjur?->nama_pendidikan,
+
+                // 🔥 FIX DI SINI (WAJIB)
+                $personnel->dikjur?->nama_pengembangan,
+
                 $personnel->polsek?->nama_polsek,
                 '', // kolom foto
             ];
@@ -50,7 +52,7 @@ class PersonnelExport implements FromCollection, WithHeadings, WithEvents, Shoul
         ];
     }
 
-    // 🔥 GAMBAR (TANPA LINK)
+    // 🔥 GAMBAR
     public function drawings()
     {
         $drawings = [];
@@ -65,10 +67,8 @@ class PersonnelExport implements FromCollection, WithHeadings, WithEvents, Shoul
                 $drawing->setPath(storage_path('app/public/' . $personnel->foto));
                 $drawing->setHeight(60);
 
-                // mulai dari baris ke-3
                 $row = $index + 3;
 
-                // kolom J (Foto)
                 $drawing->setCoordinates('J' . $row);
 
                 $drawings[] = $drawing;
@@ -105,7 +105,6 @@ class PersonnelExport implements FromCollection, WithHeadings, WithEvents, Shoul
                     ],
                 ]);
 
-                // 🔥 tinggi row biar muat foto
                 for ($i = 3; $i <= $lastRow; $i++) {
                     $sheet->getRowDimension($i)->setRowHeight(50);
                 }

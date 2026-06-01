@@ -76,7 +76,9 @@ class PersonnelResource extends Resource
                     $record->keterangan
             )
             ->searchable()
-            ->preload(),
+            ->preload()
+            ->required(),
+    
 
             Select::make('diktuk_id')
             ->label('Pendidikan Pembentukan')
@@ -90,7 +92,8 @@ class PersonnelResource extends Resource
                     $record->keterangan
             )
             ->searchable()
-            ->preload(),
+            ->preload()
+            ->required(),
 
             Select::make('dikjur_id')
             ->label('Pendidikan Kejuruan/Pengembangan')
@@ -105,6 +108,7 @@ class PersonnelResource extends Resource
             )
             ->searchable()
             ->preload(),
+
             Select::make('polsek_id')
                 ->label('Polsek')
                 ->relationship('polsek', 'nama_polsek')
@@ -119,7 +123,9 @@ class PersonnelResource extends Resource
                 ->directory('personnels')
                 ->visibility('public')
                 ->imagePreviewHeight('120')
-                ->columnSpanFull(),
+                ->columnSpanFull()
+                ->required(),
+
         ]);
     }
 
@@ -266,4 +272,4 @@ class PersonnelResource extends Resource
             'edit' => EditPersonnel::route('/{record}/edit'),
         ];
     }
-} 
+}
